@@ -1,5 +1,6 @@
 ﻿using System;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class PlayerController : MonoBehaviour
 {
@@ -9,10 +10,11 @@ public class PlayerController : MonoBehaviour
     private float secondsSinceLastWindChange;
     private float windForce;
     private Rigidbody rb;
-
+    private Scene scene;
     void Start()
     {
         rb = GetComponent<Rigidbody>();
+        scene = SceneManager.GetActiveScene();
     }
 
     private void Update()
@@ -66,5 +68,16 @@ public class PlayerController : MonoBehaviour
 
         // Actually add the force
         rb.AddRelativeForce(finalForceVector3);
+    }
+    void OnCollisionEnter(Collision other)
+    {
+        if (other.gameObject.tag == "MapElement")
+        {
+            SceneManager.LoadScene(scene.name);
+        }
+        else //This else is not needed just here if you want to do something..
+        {
+
+        }
     }
 }
