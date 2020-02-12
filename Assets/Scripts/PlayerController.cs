@@ -10,6 +10,7 @@ public class PlayerController : MonoBehaviour
     public Text timerText;
     public Text highscoreText;
     public AudioSource audioSource;
+    public bool isDead;
 
     float windForceMaximumMagnitude = 1;
     float secondsBetweenWindChange = 1;
@@ -20,7 +21,6 @@ public class PlayerController : MonoBehaviour
     Rigidbody rb;
     Scene scene;
     double timer;
-    bool dead;
 
     void Start()
     {
@@ -57,7 +57,7 @@ public class PlayerController : MonoBehaviour
         }
 
         float horizontalAxisForce = 0;
-        if (!dead)
+        if (!isDead)
         {
             // This will always be between -1 and 1
             horizontalAxisForce = Input.GetAxis("Horizontal");
@@ -104,7 +104,7 @@ public class PlayerController : MonoBehaviour
     IEnumerator End()
     {
         stopwatch.Stop();
-        dead = true;
+        isDead = true;
         PlayerPrefs.SetInt("highscore", (int)timer);
         PlayerPrefs.Save();
         audioSource.Play();

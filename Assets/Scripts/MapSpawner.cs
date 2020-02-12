@@ -12,13 +12,16 @@ public class MapSpawner : MonoBehaviour
     public byte NumberOfColumns;
     public byte TileSize;
     public float TileMoveSpeed;
-    private GameObject[] LastRow;
-    private uint newRowSpawnFixedUpdates;
-    private byte currentFixedUpdates = 0;
-    private System.Random random = new System.Random();
+    public PlayerController playerController;
+
+    GameObject[] LastRow;
+    uint newRowSpawnFixedUpdates;
+    byte currentFixedUpdates = 0;
+    System.Random random = new System.Random();
 
     void Start()
     {
+        playerController = FindObjectOfType<PlayerController>();
         newRowSpawnFixedUpdates = (uint)((float)TileSize / TileMoveSpeed);
         LastRow = new GameObject[NumberOfColumns];
         for (int z = 0; z < NumberOfRows; z++)
@@ -61,6 +64,11 @@ public class MapSpawner : MonoBehaviour
     // Happens every 0.2 seconds (Edit > Project Settings > Time> Fixed Timestep)
     void FixedUpdate()
     {
+        if(playerController.isDead)
+        {
+            TileMoveSpeed = 0;
+        }
+            
         foreach (Transform childTransform in transform)
         {
             childTransform.position += new Vector3(0, 0, -TileMoveSpeed);
