@@ -20,6 +20,7 @@ public class PlayerController : MonoBehaviour
     Rigidbody rb;
     Scene scene;
     double timer;
+    bool dead;
 
     void Start()
     {
@@ -55,8 +56,12 @@ public class PlayerController : MonoBehaviour
             secondsSinceLastWindChange = 0;
         }
 
-        // This will always be between -1 and 1
-        var horizontalAxisForce = Input.GetAxis("Horizontal");
+        float horizontalAxisForce = 0;
+        if (!dead)
+        {
+            // This will always be between -1 and 1
+            horizontalAxisForce = Input.GetAxis("Horizontal");
+        }
 
         // The more tilted the player is the stronger their rebalance should be
         // Use this help factor to achieve it
@@ -92,18 +97,16 @@ public class PlayerController : MonoBehaviour
     {
         if (other.gameObject.tag == "MapElement")
         {
-            PlayerPrefs.SetInt("highscore", (int)timer);
-            PlayerPrefs.Save();
             StartCoroutine(End());
-        }
-        else //This else is not needed just here if you want to do something..
-        {
-
         }
     }
 
     IEnumerator End()
     {
+        stopwatch.Stop();
+        dead = true;
+        PlayerPrefs.SetInt("highscore", (int)timer);
+        PlayerPrefs.Save();
         audioSource.Play();
         yield return new WaitForSecondsRealtime(3);
         SceneManager.LoadScene(scene.name);
