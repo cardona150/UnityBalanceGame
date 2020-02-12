@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -6,6 +7,7 @@ public class PlayerController : MonoBehaviour
 {
     public float windForceMaximumMagnitude;
     public float secondsBetweenWindChange = 1;
+    public AudioSource src;
 
     private float secondsSinceLastWindChange;
     private float windForce;
@@ -73,11 +75,19 @@ public class PlayerController : MonoBehaviour
     {
         if (other.gameObject.tag == "MapElement")
         {
-            SceneManager.LoadScene(scene.name);
+            StartCoroutine(End());
+            
         }
         else //This else is not needed just here if you want to do something..
         {
 
         }
+    }
+
+    IEnumerator End()
+    {
+        src.Play();
+        yield return new WaitForSecondsRealtime(2);
+        SceneManager.LoadScene(scene.name);
     }
 }
