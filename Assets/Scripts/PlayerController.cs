@@ -1,27 +1,43 @@
 ﻿using System;
 using System.Collections;
+using System.Diagnostics;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class PlayerController : MonoBehaviour
 {
-    public float windForceMaximumMagnitude;
-    public float secondsBetweenWindChange = 1;
-    public AudioSource src;
+    public Text timerText;
+    public Text highscoreText;
+    public AudioSource audioSource;
 
-    private float secondsSinceLastWindChange;
-    private float windForce;
-    private Rigidbody rb;
-    private Scene scene;
+    float windForceMaximumMagnitude = 1;
+    float secondsBetweenWindChange = 1;
+    int highscore;
+    Stopwatch stopwatch = new Stopwatch();
+    float secondsSinceLastWindChange;
+    float windForce;
+    Rigidbody rb;
+    Scene scene;
+    double timer;
+
     void Start()
     {
         rb = GetComponent<Rigidbody>();
         scene = SceneManager.GetActiveScene();
+        stopwatch.Start();
+        highscore = PlayerPrefs.GetInt("highscore", 0);
+        highscoreText.text = highscore.ToString("N0");
     }
 
     private void Update()
     {
-        //transform.position = new Vector3(0, 0, transform.position.z);
+        timer = stopwatch.Elapsed.TotalMilliseconds;
+        timerText.text = timer.ToString("N0");
+        if (timer > highscore)
+        {
+            highscoreText.text = timer.ToString("N0");
+        }
     }
 
     private void FixedUpdate()
@@ -71,12 +87,14 @@ public class PlayerController : MonoBehaviour
         // Actually add the force
         rb.AddRelativeForce(finalForceVector3);
     }
+
     void OnCollisionEnter(Collision other)
     {
         if (other.gameObject.tag == "MapElement")
         {
+            PlayerPrefs.SetInt("highscore", (int)timer);
+            PlayerPrefs.Save();
             StartCoroutine(End());
-            
         }
         else //This else is not needed just here if you want to do something..
         {
@@ -86,8 +104,8 @@ public class PlayerController : MonoBehaviour
 
     IEnumerator End()
     {
-        src.Play();
-        yield return new WaitForSecondsRealtime(2);
+        audioSource.Play();
+        yield return new WaitForSecondsRealtime(3);
         SceneManager.LoadScene(scene.name);
     }
 }
